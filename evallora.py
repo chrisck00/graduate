@@ -117,6 +117,7 @@ def eval_zero_shot(model_name, task_list=["qqp","rte","mnli","mrpc","cola", "qnl
         max_batch_size=None,
         device="cuda",
         # limit=limit,
+        bootstrap_iters=0,
         check_integrity=False,
         write_out=False,
     )
