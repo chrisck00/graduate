@@ -11,8 +11,8 @@ torch.cuda.empty_cache()
 accelerate = True
 # task_list = ["rte","boolq","hellaswag","arc_challenge", "openbookqa","piqa","coqa"]
 num_shot = 0
-task_list = ["hellaswag", "coqa", "rte"]
-# task_list = ["arc_challenge", "openbookqa", "piqa"]
+task_list = ["arc_challenge", "rte", "piqa"]
+# task_list = ["hellaswag", "coqa", "rte", "boolq", "qqp"]
 
 # # 어댑터 경로들
 adapter_paths = [
@@ -24,8 +24,8 @@ adapter_paths = [
     "./lora/piqa/adapter_model.safetensors",
     "./lora/coqa/adapter_model.safetensors"
 ]
-# model_path = "./merged_models/merged_lora_piqa"
-model_path = "./merged_models/merged_model_hella_rte_coqa2"
+# model_path = "./merged_models/merged_lora_arc_challenge"
+model_path = "./merged_models/merged_model"
 # model_path = "./merged_models/merged_model_arc_open_piqa"
 
 """
