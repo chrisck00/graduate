@@ -12,12 +12,14 @@ QNLI_MODEL = "./merged_models/merged_lora_qnli"
 ARCC_MODEL = "./merged_models/merged_lora_arc_challenge"
 OPEN_MODEL = "./merged_models/merged_lora_openbookqa"
 PIQA_MODEL = "./merged_models/merged_lora_piqa"
-MERGED_MODEL = "./merged_models/merged_model_hella_rte_coqa"
+BOOLQ_MODEL = "./merged_models/merged_lora_bool_q"
+QQP_MODEL = "./merged_models/merged_lora_glue_qqp"
+MERGED_MODEL = "./merged_models/merged_model"
 
 base_model_name = BASE_MODEL
-finetuned_model_name1 = HELLA_MODEL
-finetuned_model_name2 = RTE_MODEL
-finetuned_model_name3 = COQA_MODEL
+finetuned_model_name1 = ARCC_MODEL
+finetuned_model_name2 = PIQA_MODEL
+finetuned_model_name3 = RTE_MODEL
 save_path = MERGED_MODEL
 
 task_models = {
@@ -102,7 +104,7 @@ def compute_role_rms(base_model_name, finetuned_model_name, device="cuda"):
 
     return role_rms, role_minmax, delta
 
-def compute_role_drop_rates(delta: dict, role_rms: dict, combined_minmax: dict, default_drop_rate=0, drop_scale=0):
+def compute_role_drop_rates(delta: dict, role_rms: dict, combined_minmax: dict, default_drop_rate=0.7, drop_scale=0):
     """
     delta: {key: tensor}
     role_rms: {role: {key: rms}}
@@ -297,7 +299,7 @@ def simple_average(deltas: list, role_drop_rates_list: list, k):
 
     return merged_simple
 
-def merge_with_rms_filter(deltas: list, role_drop_rates_list: list, role_rms_list: list, topk_percent=10):
+def merge_with_rms_filter(deltas: list, role_drop_rates_list: list, role_rms_list: list, topk_percent=0):
     """
     deltas: list of {key: tensor}
     role_drop_rates_list: list of {role: {key: drop_rate}}
@@ -366,7 +368,7 @@ for k, v in delta1.items():
     print(k, v.shape, v.device)
 print(f"\n")
 """
-
+"""
 # Print role rms
 # Fine-tuned model 1
 print(f"=== role rms of ", {finetuned_model_name1}, " ===\n")
@@ -377,7 +379,7 @@ for role, rms in role_rms1.items():
             break
         print(f"{k}: {v:.4f}")
 print(f"===================================================\n")
-"""
+
 # Fine-tuned model 2
 print(f"=== role rms of ", {finetuned_model_name2}, " ===\n")
 for role, rms in role_rms2.items():
@@ -397,8 +399,8 @@ for role, rms in role_rms3.items():
             break
         print(f"{k}: {v:.4f}")
 print(f"===================================================\n")
-"""
 
+"""
 # Print role min/max/mean
 # Fine-tuned model 1
 print(f"=== role min/max/mean of ", {finetuned_model_name1}, " ===\n")
@@ -464,7 +466,6 @@ print(f"===================================================\n")
 role_drop_rates1 = compute_role_drop_rates(delta1, role_rms1, combined_minmax)
 role_drop_rates2 = compute_role_drop_rates(delta2, role_rms2, combined_minmax)
 role_drop_rates3 = compute_role_drop_rates(delta3, role_rms3, combined_minmax)
-
 
 
 
@@ -560,7 +561,7 @@ device = "cpu"  # 디버깅 시 CPU 사용
 merged_delta = merge_with_rms_filter(
     [delta_dropped1, delta_dropped2, delta_dropped3],
     [role_drop_rates1, role_drop_rates2, role_drop_rates3],
-    [role_rms1, role_rms2, role_rms3]
+    [role_rms1, role_rms2, role_rms3],
 )
 
 
